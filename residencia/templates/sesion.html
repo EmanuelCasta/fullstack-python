@@ -1,0 +1,99 @@
+{% load static %}
+{% load reactpy %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro</title>
+    
+    
+    
+</head>
+<body>
+    <section class="forms-section">
+        <h1 class="section-title"></h1>
+        <div class="forms">
+          <div class="form-wrapper is-active">
+            <button type="button" class="switcher switcher-login">
+              Iniciar Sesion
+              <span class="underline"></span>
+            </button>
+         
+            {% component "residencia.components.sesion"  %}
+           
+          </div>
+          <div class="form-wrapper">
+            <button type="button" class="switcher switcher-signup">
+              Registrate
+              <span class="underline"></span>
+            </button>
+            <form class="form form-signup">
+              <fieldset>
+                <legend>Ingresa la informacion para el registro.</legend>
+              
+                  
+                <div class="input-block">
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" required>
+                </div>
+                <div class="input-block">
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" required>
+                </div>
+                <div class="input-block">
+                    <label for="rol_id">Rol ID:</label>
+                    <input type="text" name="rol_id" required>
+                
+                </div>
+                <div class="input-block">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" name="nombre" required>
+                </div>
+                <div class="input-block">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" name="apellido" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="celular">Celular:</label>
+                    <input type="text" name="celular" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="cedula">Cedula:</label>
+                    <input type="text" name="cedula" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="edad">Edad:</label>
+                    <input type="number" name="edad" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="direccion">Direccion:</label>
+                    <input type="text" name="direccion" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="barrio">Barrio:</label>
+                    <input type="text" name="barrio" required>
+                </div>
+
+                <div class="input-block">
+                    <label for="tipo_persona">Tipo Persona:</label>
+                    <input type="text" name="tipo_persona" required>
+                </div>
+              </fieldset>
+              <button type="submit" class="btn-registrar">Continue</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+
+
+
+</body>
+
+</html>
