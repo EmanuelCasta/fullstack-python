@@ -1,25 +1,29 @@
 
 from apps.src.infra.models import Inmueble, UsuarioApartamentos
-
+from apps.src.infra.models.usuario_model import Usuario
+from django.shortcuts import get_object_or_404
 
 class ServicioAutomatizar:
     def __init__(self) -> None:
         pass
     
-    def agregar_inmueble(tipo_inmueble, numero, piso=None, coeficiente=1.0, apartamento_dependiente_id=None):
+    def agregar_inmueble(self,tipo_inmueble, numero,code, piso=None, coeficiente=1.0):
+
         inmueble = Inmueble.objects.create(
             tipo_inmueble=tipo_inmueble,
             numero=numero,
             piso=piso,
             coeficiente=coeficiente,
-            apartamento_dependiente_id=apartamento_dependiente_id
+            code =code
         )
         return inmueble
     
-    def agregar_usuario_apartamento(self,usuario_id, inmueble_id, is_autorizado=False, is_dueño=True, coeficiente=1.0):
+    def agregar_usuario_apartamento(self,cedula, inmueble_id, is_autorizado=False, is_dueño=True, coeficiente=1.0):
+        usuario = get_object_or_404(Usuario, cedula=cedula)
+        inmueble = get_object_or_404(Inmueble, code=inmueble_id)
         relacion = UsuarioApartamentos.objects.create(
-            usuario_id=usuario_id,
-            inmueble_id=inmueble_id,
+            usuario=usuario,
+            inmueble=inmueble,
             isAutorizado=is_autorizado,
             isDueño=is_dueño,
             coeficiente=coeficiente

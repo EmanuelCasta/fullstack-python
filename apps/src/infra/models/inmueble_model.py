@@ -7,6 +7,7 @@ class Inmueble(models.Model):
         ('CuartoÚtil', 'Cuarto Útil')
     ]
     id = models.AutoField(primary_key=True)
+    code = models.CharField(max_length=255,unique=True)
     tipo_inmueble = models.CharField(max_length=255, choices=TIPO_INMUEBLE_CHOICES)
     numero = models.CharField(max_length=255)
     piso = models.IntegerField(null=True, blank=True)  

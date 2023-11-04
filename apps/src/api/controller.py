@@ -7,7 +7,8 @@ def jwt_response_payload_handler(token, user=None, request=None):
             'nombre': user.nombre
         }
     }
-    
+import ast
+
 from rest_framework import serializers
 from rest_framework.exceptions import APIException
 class DynamicJsonSerializer(serializers.Serializer):
@@ -113,17 +114,18 @@ class UsuarioViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated], url_path='agregar-zona-comun')
     def agregar_zona_comun(self, request):
-        nombre = request.data.get("nombre")
-        maxHora = request.data.get("maxHora")
-        esDeposito = request.data.get("esDeposito")
-        esPrecio = request.data.get("esPrecio")
-        maxPersona = request.data.get("maxPersona")
-        precio = request.data.get("precio", None)
-        zona_comun = UsuarioAll.agregar_zona_comun(nombre, maxHora, esDeposito, esPrecio, maxPersona, precio)
-        return Response({
-            "zona_comun_id": zona_comun.id,
-            "nombre": zona_comun.nombre,
-        })
+        try:
+            nombre = request.data.get("nombre")
+            maxHora = request.data.get("maxHora")
+            esDeposito = request.data.get("esDeposito")
+            esPrecio = request.data.get("esPrecio")
+            maxPersona = request.data.get("maxPersona")
+            precio = request.data.get("precio", None)
+            zona_comun = UsuarioAll.agregar_zona_comun(nombre, maxHora, bool(esDeposito), bool(esPrecio), maxPersona, precio)
+           
+            return Response({"message":"Exito"},status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"message":str(e)},status=status.HTTP_400_BAD_REQUEST)
         
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], url_path='listar-zona-comun')
     def listar_zona_comun(self,request):
@@ -160,7 +162,7 @@ class PQRSViewSet(viewsets.ViewSet):
         result = ServicePQRS().registrar_pqrsd(usuario_afectado_id, tipo_pqrs, cedula, edad, isCorreo, mensaje, evidencias)
         return Response(result)
 
-    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated], url_path='asignar-responsable')
+    @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated], url_path='asignar-responsable')
     def asignar_responsable(self, request, pk=None):
         pqrsd_id = pk
         responsable_id = request.data.get("responsable_id")
@@ -178,12 +180,17 @@ class PQRSViewSet(viewsets.ViewSet):
         result = ServicePQRS().agregar_comentario(usuario_afectado_id, usuario_responsable_id, pqrsd_id, mensaje)
         return Response(result)
 
-    @action(detail=True, methods=['POST'], permission_classes=[IsAuthenticated], url_path='finalizar-pqrsd')
-    def finalizar_pqrsd(self, request, pk=None):
-        pqrsd_id = pk
-
-        result = ServicePQRS().finalizar_pqrsd(pqrsd_id)
-        return Response(result)
+    @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated], url_path='finalizar-pqrsd')
+    def finalizar_pqrsd(self, request):
+        try:
+            print(request.data.get("id"))
+            pqrsd_id =   request.data.get("id")
+            
+            result = ServicePQRS().finalizar_pqrsd(pqrsd_id)
+            return Response({"message":"Exito"},status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"message":str(e)},status=status.HTTP_400_BAD_REQUEST)
+        
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], url_path='listado-pqrsd-admin')
     def listado_pqrsd_admin(self, request):
@@ -241,7 +248,7 @@ class ReservaServiceViewSet(viewsets.ViewSet):
             hora_salida = datetime.datetime.fromisoformat(hora_salida)
             print("Aqui!!!!",invitados)
             
-            result = ReservaService().realizar_reserva(usuario_id, zona_comun_id, hora_entrada, hora_salida, invitados)
+            result = ReservaService().realizar_reserva(usuario_id, zona_comun_id, hora_entrada, hora_salida, ast.literal_eval(invitados))
             return Response({
                 "message":"Reserva exitosa!!!"
             })
@@ -273,14 +280,14 @@ class ReservaServiceViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], url_path='listado-para-encargados')
     def listado_para_encargados(self, request):
-        usuario_id = request.query_params.get("usuario_id")
-        result = ReservaService().listado_para_encargados(usuario_id)
-        return Response(result)
+        #usuario_id = request.query_params.get("usuario_id")
+        result = ReservaService().listado_para_encargados(0)
+        return Response(result,status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], url_path='listado-para-porteria')
     def listado_para_porteria(self, request):
-        usuario_id = request.query_params.get("usuario_id")
-        result = ReservaService().listado_para_porteria(usuario_id)
+        
+        result = ReservaService().listado_para_porteria(0)
         return Response(result)
 
     @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated], url_path='validar-reglas-zona-comun')
@@ -298,24 +305,31 @@ class ServicioAutomatizarViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated], url_path='agregar-inmueble')
     def agregar_inmueble(self, request):
-        tipo_inmueble = request.data.get("tipo_inmueble")
-        numero = request.data.get("numero")
-        piso = request.data.get("piso", None)
-        coeficiente = request.data.get("coeficiente", 1.0)
-        apartamento_dependiente_id = request.data.get("apartamento_dependiente_id", None)
-        result = ServicioAutomatizar().agregar_inmueble(tipo_inmueble, numero, piso, coeficiente, apartamento_dependiente_id)
-        return Response(result)
+        try:
+            tipo_inmueble = request.data.get("tipo_inmueble")
+            numero = request.data.get("numero")
+            code = request.data.get("code", None)
+            piso = request.data.get("piso", None)
+            coeficiente = request.data.get("coeficiente", 1.0)
+            
+            result = ServicioAutomatizar().agregar_inmueble(tipo_inmueble, numero,code, piso, coeficiente)
+            return Response({"message":"Exito"},status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"message":str(e)},status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['POST'], permission_classes=[IsAuthenticated], url_path='agregar-usuario-apartamento')
     def agregar_usuario_apartamento(self, request):
-        usuario_id = request.data.get("usuario_id")
-        inmueble_id = request.data.get("inmueble_id")
-        is_autorizado = request.data.get("is_autorizado", False)
-        is_dueño = request.data.get("is_dueño", True)
-        coeficiente = request.data.get("coeficiente", 1.0)
-        
-        result = ServicioAutomatizar().agregar_usuario_apartamento(usuario_id, inmueble_id, is_autorizado, is_dueño, coeficiente)
-        return Response(result)
+        try:
+            cedula = request.data.get("cedula")
+            codigo_inmuble = request.data.get("codigo_inmuble")
+            is_autorizado = request.data.get("is_autorizado", False)
+            is_dueño = request.data.get("is_dueño", True)
+            coeficiente = request.data.get("coeficiente", 1.0)
+           
+            result = ServicioAutomatizar().agregar_usuario_apartamento(cedula, codigo_inmuble, is_autorizado, is_dueño, coeficiente)
+            return Response({"message":"Exito"},status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"message":str(e)},status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['GET'], permission_classes=[IsAuthenticated], url_path='listar-inmuebles-con-detalles')
     def listar_inmuebles_con_detalles(self, request):

@@ -119,7 +119,7 @@ class ReservaService:
         local_timezone = pytz.timezone("America/Bogota")
         now_with_timezone = datetime.now(local_timezone)
         
-        reservas = Reservas.objects.filter(esCancelado=False, horaDeEntrada__gt=now_with_timezone, usuario__id=usuario_id).select_related('zona_comun', 'usuario').order_by('-createReserva')
+        reservas = Reservas.objects.filter(esCancelado=False, horaDeEntrada__gt=now_with_timezone).select_related('zona_comun', 'usuario').order_by('-createReserva')
         
         listado = []
         for reserva in reservas:
@@ -137,7 +137,7 @@ class ReservaService:
         local_timezone = pytz.timezone("America/Bogota")
         now_with_timezone = datetime.now(local_timezone)
 
-        reservas = Reservas.objects.filter(esCancelado=False, horaDeEntrada__gt=now_with_timezone, usuario__id=usuario_id).select_related('zona_comun', 'usuario').order_by('-createReserva')
+        reservas = Reservas.objects.filter(esCancelado=False, horaDeEntrada__gt=now_with_timezone).select_related('zona_comun', 'usuario').order_by('-createReserva')
         
         listado = []
         for reserva in reservas:
@@ -151,8 +151,9 @@ class ReservaService:
                 'FechaFin': reserva.horaDeSalida,
                 'ReciboPago': reserva.IsPago,
                 'DepositoEntregado': reserva.isDeposito,
-                'Invitados': listado_invitados
+                'Invitados': ",".join(listado_invitados)
             })
+        print(listado_invitados,"Hila!")
         return listado
 
     
