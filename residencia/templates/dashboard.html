@@ -18,9 +18,12 @@
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
     rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.2/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.3/FileSaver.min.js"></script>
+
 </head>
 
 <body>
@@ -161,7 +164,7 @@
           <div class="profile-card-wrapper">
 
             <figure class="card-avatar">
-              <img src="" alt="" width="48" height="48">
+              <img src="{% static 'png-transparent-user-computer-icons-user-miscellaneous-cdr-rectangle-thumbnail.png' %}" alt="Imagen">
             </figure>
 
             <div>
@@ -199,7 +202,7 @@
             <li class="progress-item">
 
               <div class="progress-label">
-                <p class="progress-title">Project Completion</p>
+                <p class="progress-title">Porcentaje pagos en la administracion</p>
 
                 <data class="progress-data" value="85">85%</data>
               </div>
@@ -213,7 +216,7 @@
             <li class="progress-item">
 
               <div class="progress-label">
-                <p class="progress-title">Overall Rating</p>
+                <p class="progress-title">Valoracion unidad</p>
 
                 <data class="progress-data" value="7.5">7.5</data>
               </div>
@@ -228,99 +231,20 @@
 
         </div>
 
-        <div class="card-wrapper">
 
-          <div class="card task-card">
 
-            <div class="card-icon icon-box green">
-              <span class="material-symbols-rounded  icon">task_alt</span>
-            </div>
+        <div class="card">
 
-            <div>
-              <data class="card-data" value="21">21</data>
 
-              <p class="card-text">Tasks Completed</p>
-            </div>
+         
+          <p class="card-title">PQRSD</p>
 
-          </div>
+          {% component "residencia.components.crear_pqrs" recipientUsuario=usuario %}
 
-          <div class="card task-card">
+       
 
-            <div class="card-icon icon-box blue">
-              <span class="material-symbols-rounded  icon">drive_file_rename_outline</span>
-            </div>
 
-            <div>
-              <data class="card-data" value="21">21</data>
 
-              <p class="card-text">Tasks Inprogress</p>
-            </div>
-
-          </div>
-
-        </div>
-
-        <div class="card revenue-card">
-
-          <button class="card-menu-btn icon-box" aria-label="More" data-menu-btn>
-            <span class="material-symbols-rounded  icon">more_horiz</span>
-          </button>
-
-          <ul class="ctx-menu">
-
-            <li class="ctx-item">
-              <button class="ctx-menu-btn icon-box">
-                <span class="material-symbols-rounded  icon" aria-hidden="true">edit</span>
-
-                <span class="ctx-menu-text">Edit</span>
-              </button>
-            </li>
-
-            <li class="ctx-item">
-              <button class="ctx-menu-btn icon-box">
-                <span class="material-symbols-rounded  icon" aria-hidden="true">cached</span>
-
-                <span class="ctx-menu-text">Refresh</span>
-              </button>
-            </li>
-
-          </ul>
-
-          <p class="card-title">Revenue</p>
-
-          <data class="card-price" value="2100">$2,100</data>
-
-          <p class="card-text">Last Week</p>
-
-          <div class="divider card-divider"></div>
-
-          <ul class="revenue-list">
-
-            <li class="revenue-item icon-box">
-
-              <span class="material-symbols-rounded  icon  green">trending_up</span>
-
-              <div>
-                <data class="revenue-item-data" value="15">15%</data>
-
-                <p class="revenue-item-text">Prev Week</p>
-              </div>
-
-            </li>
-
-            <li class="revenue-item icon-box">
-
-              <span class="material-symbols-rounded  icon  red">trending_down</span>
-
-              <div>
-                <data class="revenue-item-data" value="10">10%</data>
-
-                <p class="revenue-item-text">Prev Month</p>
-              </div>
-
-            </li>
-
-          </ul>
 
         </div>
 
@@ -329,9 +253,6 @@
 
 
 
-      <!-- 
-        - #PROJECTS
-      -->
 
       <section class="projects">
 
@@ -341,7 +262,7 @@
           
         </div>
        
-        {% component "residencia.components.crear_reserva" recipient=zona_comun recipientUsuario=usuario %}
+        {% component "residencia.components.crear_reserva" recipient=zona_comun recipientUsuario=usuario recipienteRoles=roles reciepientePQRS=prqrs %}
         
         
         
@@ -364,183 +285,18 @@
       <section class="tasks">
 
         <div class="section-title-wrapper">
-          <h2 class="section-title">Tasks</h2>
+          <h2 class="section-title">Reservas</h2>
 
-          <button class="btn btn-link icon-box">
-            <span>View All</span>
-
-            <span class="material-symbols-rounded  icon" aria-hidden="true">arrow_forward</span>
-          </button>
+          
         </div>
 
-        <ul class="tasks-list">
+        {% component "residencia.components.lista_reservas" recipientUsuario=usuario listaReservas=reservasEncargados %}
 
-          <li class="tasks-item">
-            <div class="card task-card">
 
-              <div class="card-input">
-                <input type="checkbox" name="task-1" id="task-1">
-
-                <label for="task-1" class="task-label">
-                  Draft the new contract document for sales team
-                </label>
-              </div>
-
-              <div class="card-badge cyan radius-pill">Today 10pm</div>
-
-              <ul class="card-meta-list">
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">list</span>
-
-                    <span>3/7</span>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">comment</span>
-
-                    <data value="21">21</data>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="card-badge red">High</div>
-                </li>
-
-              </ul>
-
-            </div>
-          </li>
-
-          <li class="tasks-item">
-            <div class="card task-card">
-
-              <div class="card-input">
-                <input type="checkbox" name="task-2" id="task-2">
-
-                <label for="task-2" class="task-label">
-                  iOS App home page design
-                </label>
-              </div>
-
-              <div class="card-badge cyan radius-pill">Today 5pm</div>
-
-              <ul class="card-meta-list">
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">list</span>
-
-                    <span>10/11</span>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">comment</span>
-
-                    <data value="5">5</data>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="card-badge orange">Medium</div>
-                </li>
-
-              </ul>
-
-            </div>
-          </li>
-
-          <li class="tasks-item">
-            <div class="card task-card">
-
-              <div class="card-input">
-                <input type="checkbox" name="task-3" id="task-3">
-
-                <label for="task-3" class="task-label">
-                  Enable analytics tracking
-                </label>
-              </div>
-
-              <div class="card-badge radius-pill">Tomorrow 5pm</div>
-
-              <ul class="card-meta-list">
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">list</span>
-
-                    <span>5/11</span>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">comment</span>
-
-                    <data value="7">7</data>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="card-badge orange">Medium</div>
-                </li>
-
-              </ul>
-
-            </div>
-          </li>
-
-          <li class="tasks-item">
-            <div class="card task-card">
-
-              <div class="card-input">
-                <input type="checkbox" name="task-4" id="task-4">
-
-                <label for="task-4" class="task-label">
-                  Kanban board design
-                </label>
-              </div>
-
-              <div class="card-badge radius-pill">Sep 11, 3pm</div>
-
-              <ul class="card-meta-list">
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">list</span>
-
-                    <span>0/5</span>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="meta-box icon-box">
-                    <span class="material-symbols-rounded  icon">comment</span>
-
-                    <data value="3">3</data>
-                  </div>
-                </li>
-
-                <li>
-                  <div class="card-badge green">Low</div>
-                </li>
-
-              </ul>
-
-            </div>
-          </li>
-
-        </ul>
-
-        <button class="btn btn-primary" data-load-more>
+        <button id="GenerarReporte" class="btn btn-primary" data-load-more>
           <span class="spiner"></span>
 
-          <span>Load More</span>
+          <span>Descarga porteros</span>
         </button>
 
       </section>
@@ -552,43 +308,13 @@
 
 
 
-  <!-- 
-    - #FOOTER
-  -->
-
   <footer class="footer">
     <div class="container">
 
-      <ul class="footer-list">
+      
 
-        <li class="footer-item">
-          <a href="#" class="footer-link">About</a>
-        </li>
-
-        <li class="footer-item">
-          <a href="#" class="footer-link">Privacy</a>
-        </li>
-
-        <li class="footer-item">
-          <a href="#" class="footer-link">Terms</a>
-        </li>
-
-        <li class="footer-item">
-          <a href="#" class="footer-link">Developers</a>
-        </li>
-
-        <li class="footer-item">
-          <a href="#" class="footer-link">Support</a>
-        </li>
-
-        <li class="footer-item">
-          <a href="#" class="footer-link">Careers</a>
-        </li>
-
-      </ul>
-
-      <p class="copyright">
-        &copy; 2022 <a href="#" class="copyright-link">codewithsadee</a>. All Rights Reserved
+      <p class="sueño">
+        <a href="#" class="copyright-link">Que sueño profe</a>. 
       </p>
 
     </div>
@@ -598,9 +324,6 @@
 
 
 
-  <!-- 
-    - custom js link
-  -->
 </body>
 
 </html>

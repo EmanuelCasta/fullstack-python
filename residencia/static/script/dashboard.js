@@ -141,6 +141,103 @@ $('#eviaButton').click(function() {
   }
   
 });
+let currentSlide = 0;
+    const slides = document.querySelectorAll('.pqrs-content');
+    const prevButton = document.getElementById('prev');
+    const nextButton = document.getElementById('next');
+  
+    // Muestra el primer elemento
+    if (slides.length > 0) {
+      slides[0].classList.add('active');
+    }
+  
+    function changeSlide(direction) {
+      slides[currentSlide].classList.remove('active');
+      currentSlide += direction;
+      slides[currentSlide].classList.add('active');
+    }
+  
+    if (prevButton) {
+      prevButton.addEventListener('click', function() {
+        if (currentSlide > 0) {
+          changeSlide(-1);
+        }
+      });
+    }
+  
+    if (nextButton) {
+      nextButton.addEventListener('click', function() {
+        if (currentSlide < slides.length - 1) {
+          changeSlide(1);
+        }
+      });
+    }
+  
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // ¿Esta cookie comienza con el nombre que queremos?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    const token = getCookie('token');
+    
+$("#GenerarReporte").click(function() {
+
+
+        
+        const token = getCookie('token')
+
+            $.ajax({
+                type: "GET",
+                url: "http://localhost:8000/residencia/reservas/listado-para-porteria/",
+                headers: {'Authorization': 'Bearer ' + token},
+                dataType: 'json',
+                success: function(data) {
+                    // Convierte el JSON a formato de hoja de cálculo
+                    var ws = XLSX.utils.json_to_sheet(data);
+                    var wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Datos");
+    
+                    // Genera el archivo Excel
+                    var wbout = XLSX.write(wb, {bookType:'xlsx', type:'binary'});
+    
+                    function s2ab(s) {
+                        var buf = new ArrayBuffer(s.length);
+                        var view = new Uint8Array(buf);
+                        for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                        return buf;
+                    }
+    
+                    // Guarda el archivo
+                    saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'datos.xlsx');
+                },
+                error: function() {
+
+                    $("#responseMessage").text("Error al enviar la solicitud.");
+                }
+            });
+        });
+  
+
+$(".add-zone-button").click(function() {
+    var csrfToken = getCookie('token');
+    if (!csrfToken || csrfToken.trim() === "") {
+      window.location.href = '/residencia/sesion/';
+    }
+    
+  });
+
+  
 
 /**
  * toggle ctx-menu when click on card-menu-btn

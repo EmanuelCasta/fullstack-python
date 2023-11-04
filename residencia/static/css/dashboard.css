@@ -195,6 +195,7 @@
   opacity: 0.4;
   transition: opacity 0.3s;
 }
+
 .form-section:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Una sombra más profunda al pasar el mouse */
   opacity: 1;
@@ -209,6 +210,66 @@
 .form-section.active {
   opacity: 1;
 }
+.project-item {
+  margin: 16px;
+  list-style: none;
+}
+
+.card {
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  overflow: hidden;
+}
+
+.slider-container {
+  position: relative;
+}
+
+.slide {
+  display: none; /* Oculta todos los slides por defecto */
+  position: absolute;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.slide.active {
+  display: block; /* Muestra el slide activo */
+}
+
+.slider-btn {
+  padding: 10px;
+  border: none;
+  background: #007BFF;
+  color: white;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.slider-btn:hover {
+  background: #0056b3;
+}
+
+.submit-btn {
+  padding: 10px;
+  border: none;
+  background: #28a745;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.submit-btn:hover {
+  background: #218838;
+}
+
+#comment-input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 
 
 .form-row {
@@ -220,6 +281,81 @@
 label {
     font-weight: bold;
 }
+#slider-container {
+  position: relative;
+  max-width: 600px; /* o el ancho que prefieras */
+  margin: auto;
+  overflow: hidden;
+}
+
+.pqrs-content {
+  display: none; /* Oculta todos los elementos por defecto */
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pqrs-content.active {
+  display: block; /* Solo el elemento activo se muestra */
+}
+
+.slider-btn {
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #007BFF;
+  color: #007BFF;
+  border: none;
+  cursor: pointer;
+}
+
+.slider-btn:hover {
+  background-color: #0056b3;
+}
+
+.evidencias, .comentarios {
+  margin-top: 20px;
+}
+
+#evidencia, #nuevo-comentario {
+  margin-bottom: 10px;
+}
+
+#finalizar-pqrs, #enviar-comentario {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: #007BFF;
+  border: none;
+  cursor: pointer;
+}
+
+#finalizar-pqrs:hover, #enviar-comentario:hover {
+  background-color: #357a38;
+}
+.slider-controls {
+  display: flex;
+  justify-content: space-between; /* Espaciado entre los botones */
+  align-items: center;
+  padding: 10px; /* Espaciado alrededor de los botones */
+}
+
+.slider-btn {
+  padding: 10px 20px; /* Tamaño del botón */
+  margin: 0 5px; /* Espaciado entre botones */
+  border: 1px solid #ddd; /* Borde del botón */
+  background-color: #f8f8f8; /* Color de fondo */
+  cursor: pointer; /* Cambia el cursor a una mano cuando se pasa por encima */
+  transition: background-color 0.3s; /* Transición suave para el color de fondo */
+}
+
+.slider-btn:hover {
+  background-color: #e7e7e7; /* Cambia el color de fondo al pasar por encima */
+}
+
+.comentario {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
 
 input, select {
     padding: 10px;
@@ -524,7 +660,7 @@ input, select {
   .article.container { padding: 20px 14px; }
   
   .home {
-    display: grid;
+    
     gap: 25px;
   }
   

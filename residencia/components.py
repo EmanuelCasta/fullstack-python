@@ -80,7 +80,7 @@ def sesion():
                       )
 
 @component
-def crear_reserva(recipient, recipientUsuario):
+def crear_reserva(recipient, recipientUsuario, recipienteRoles,reciepientePQRS):
     now =  datetime.now()
     formatted_date = now.strftime("%b %d, %Y")
     formatted_date_html = now.strftime("%Y-%m-%d")
@@ -96,20 +96,19 @@ def crear_reserva(recipient, recipientUsuario):
     nombreRol, setNombreRol= use_state("")
     idrol , setidRol = use_state("")
     cedulaPersonal , setCedulaPersonal = use_state("")
-    
-    token = recipient[0]["token"]
-    headers = {
-                'Content-Type': 'application/json',
-                'Authorization': f'Bearer {token}',
-    }
-    roles = None
-    requestRol: Response = requests.post(
-                    'http://localhost:8000/residencia/usuario/listar_roles/',
-                    headers=headers)
-    if requestRol.status_code >= 200 or requestRol.status_code <= 205:
-        roles =requestRol.json()
-        if not roles:
-            roles = ["Agrega un nuevo rol"]
+    codigoInmueble, setCodigoInmuble = use_state("")
+    esAutorizado, setEsAutorizado = use_state("")
+    esDueno, setEsDueno = use_state("")
+    coeficiente, setCoeficiente = use_state("")
+    tipoInmueble, setTipoInmueble = use_state("")
+    codigoInmuebleNoAparta,setCodigoInmuebleNoAparta = use_state("")
+    piso,setPiso = use_state("")
+    nombreZona, setNombreZona =use_state("")
+    maximaHoras, setMaximaHora = use_state("")
+    maximaPersonas, setMaximaPersonas= use_state("")
+    precio, setPrecio = use_state("")
+    idPqrs , setIdPqrs = use_state("")
+        
     
 
     def handleSelectZone(id_zone):
@@ -117,8 +116,6 @@ def crear_reserva(recipient, recipientUsuario):
         setCountZone(id_zone["target"]["value"])
         setZone(id_zone["target"]["value"])
         
-  
-    
     def handledepartureTime(datatime):
         setShowMore(False)
         setdepartureTime(pytz.timezone('America/Bogota').localize(datetime.strptime(datatime["target"]["value"],"%Y-%m-%dT%H:%M")).astimezone(pytz.utc))
@@ -246,9 +243,215 @@ def crear_reserva(recipient, recipientUsuario):
                 setShowMore(True)
                 setMessage(responseZonaComun.json()["message"])
         
+    def handleAgregarUsuarioAparatamento(request):
+        pass_test = True
+        if not cedulaPersonal:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Ingrese cedula de la persona")
+        if not esDueno:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Selecciona si es dueño o no")
+        if not esAutorizado:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Selecciona si es autorizado o no")
+        if not coeficiente:
+            pass_test= False
+            setShowMore(True)
+            setMessage("Pon un coeficiente")
+            
+        if pass_test:
+            token = recipient[0]["token"]
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {token}',
+            }
+            
+            responseZonaComun: Response = requests.post(
+                    'http://localhost:8000/residencia/automatizar/agregar-usuario-apartamento/',
+                    data= json.dumps({
+                    "cedula" : cedulaPersonal,
+                    "codigo_inmuble":codigoInmueble,
+                    "is_autorizado":esAutorizado,
+                    "is_dueño":esDueno,
+                    "coeficiente":coeficiente
+                    }),
+                    headers=headers)
         
         
+            if responseZonaComun.status_code != 200 and responseZonaComun.status_code != 204:
+                setShowMore(True)
+                setMessage(responseZonaComun.json()["message"])
     
+    
+
+    def handleNombreZona(request):
+        setShowMore(False)
+        setNombreZona(request["target"]["value"])                  
+                                      
+    def handleMaximaHoras(request):
+        setShowMore(False)
+        setMaximaHora(request["target"]["value"])
+
+    def handleMaximaPersonas(request):
+        setShowMore(False)
+        setMaximaPersonas(request["target"]["value"])
+                                      
+    def handlePrecio(request):
+        setShowMore(False)
+        setPrecio(request["target"]["value"])
+    
+    def handleAgregar(request):
+        pass_test = True
+        if not nombreZona:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Ingrese el nombre de la zona")
+        if not maximaHoras:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Ingrese la mazima de horas")
+        if not maximaPersonas:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Ingresa la maxima personas")
+        if not precio:
+            pass_test= False
+            setShowMore(True)
+            setMessage("Ingresa un precio")
+            
+        if pass_test:
+            token = recipient[0]["token"]
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {token}',
+            }
+            
+            responseZonaComun: Response = requests.post(
+                    'http://localhost:8000/residencia/usuario/agregar-zona-comun/',
+                    data= json.dumps({
+                    "nombre":nombreZona,
+                    "maxHora":maximaHoras,
+                    "esDeposito":esAutorizado,
+                    "esPrecio":esDueno,
+                    "maxPersona":maximaPersonas,
+                    "precio":precio
+                    }),
+                    headers=headers)
+
+        
+            if responseZonaComun.status_code != 200 and responseZonaComun.status_code != 204:
+                setShowMore(True)
+                setMessage(responseZonaComun.json()["message"])
+    
+            
+    def handleCodigoInmueble(request):
+        setShowMore(False)
+        setCodigoInmuble(request["target"]["value"])
+    
+    
+                                             
+    def handleCoeficiente(request):
+        setShowMore(False)
+        setCoeficiente(request["target"]["value"])
+                               
+                                                           
+    def handleEsDueno(request):
+        setShowMore(False)
+        setEsDueno(request["target"]["value"])
+    
+    def handleEsAutorizado(request):
+        setShowMore(False)
+        setEsAutorizado(request["target"]["value"])
+
+    def handleTipoInmueble(request):
+        setShowMore(False)
+        setTipoInmueble(request["target"]["value"])
+                                                                          
+    def handleCodigoInmueble(request):
+        setShowMore(False)
+        setCodigoInmuebleNoAparta(request["target"]["value"])
+    
+    def handlePiso(request):
+        setShowMore(False)
+        setPiso(request["target"]["value"])
+    
+    def handleAgregarInmuble(request):
+        pass_test = True
+        if not tipoInmueble:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Ingrese el tipo de inmueble")
+        if not codigoInmuebleNoAparta:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Ingrese el codigo del inmueble")
+        if not piso:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Selecciona el piso del inmueble")
+        if not coeficiente:
+            pass_test= False
+            setShowMore(True)
+            setMessage("ingresa un coeficiente del inmueble")
+            
+        if pass_test:
+            token = recipient[0]["token"]
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {token}',
+            }
+            
+            responseZonaComun: Response = requests.post(
+                    'http://localhost:8000/residencia/automatizar/agregar-inmueble/',
+                    data= json.dumps({
+                    "tipo_inmueble":tipoInmueble,
+                    "numero":codigoInmuebleNoAparta,
+                    "piso": piso,
+                    "coeficiente":coeficiente,
+                    "code":codigoInmuebleNoAparta
+                    }),
+                    headers=headers)
+        
+        
+            if responseZonaComun.status_code != 200 and responseZonaComun.status_code != 204:
+                setShowMore(True)
+                setMessage(responseZonaComun.json()["message"])
+            
+    def hanf(reque):
+        setIdPqrs(reque["target"]["value"])
+      
+        
+    def handleFinalizat(rq):
+        pass_test = True
+        if not idPqrs:
+            pass_test = False
+            setShowMore(True)
+            setMessage("Dale click o ingresa el id del pqrsd")
+       
+            
+        if pass_test:
+            token = recipient[0]["token"]
+            headers = {
+                'Content-Type': 'application/json',
+                'Authorization': f'Bearer {token}',
+            }
+            
+            responseZonaComun: Response = requests.post(
+                    'http://localhost:8000/residencia/prqs/finalizar-pqrsd/',
+                    data= json.dumps({
+                    "id":idPqrs,
+                 
+                    }),
+                    headers=headers)
+        
+        
+            if responseZonaComun.status_code != 200 and responseZonaComun.status_code != 204:
+                setShowMore(True)
+                setMessage(responseZonaComun.json()["message"])
+        
     
     propiedadesUsuario = html.ul({ "class":"project-list"},
                 html.li({"class":"project-item"},
@@ -319,7 +522,7 @@ def crear_reserva(recipient, recipientUsuario):
                     )
                 ),django_css("css/dashboard.css"),django_js("script/dashboard.js")  
     )
-    
+    activate = ["active"]+([""]*(len(reciepientePQRS)-1))
     propiedadesAdmin = html.ul({ "class":"project-list"},
                 html.li({"class":"project-item"},
                     html.div({"class":"card2 project-card"},
@@ -329,84 +532,95 @@ def crear_reserva(recipient, recipientUsuario):
                                 html.h4("Agregar Zona Comun"),
                                 html.div({"class":"form-row"},
                                         html.label({"for":"nombre"},"Nombre:"),
-                                        html.input({"type":"text","id":"nombre","placeholder":"Nombre de la zona"})
+                                        html.input({"type":"text","id":"nombre","placeholder":"Nombre de la zona","onChange":handleNombreZona})
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"maxHora"},"Máx. Horas:"),
-                                        html.input({"type":"number","id":"maxHora","placeholder":"Máximas horas"})
+                                        html.input({"type":"number","id":"maxHora","placeholder":"Máximas horas","onChange":handleMaximaHoras})
                                 ),html.div({"class":"form-row"},
-                                        html.label({"for":"esPrecio"},"Precio:"),
-                                        html.div({"class":"checkbox-container"},
-                                                html.input({"type":"checkbox","id":"esPrecio","placeholder":"Precio"}),
+                                        html.label({"for":"esAutorizado"},"¿Requiere deposito?:"),
+                                        html.select({"id":"tipo_rol","onChange":handleEsAutorizado},
+                                                                html.option({"value":""},"Seleccione una opción"),
 
+                                            html.option({"value":False},"No") ,
+                                            html.option({"value":True},"Si")
+                                            
                                         )
-                                        
                                 ),html.div({"class":"form-row"},
-                                        html.label({"for":"esDeposito"},"Depósito:"),
-                                        html.div({"class":"checkbox-container"},
-                                            html.input({"type":"checkbox","id":"esDeposito","placeholder":"Máximas horas"})
-                                        )
+                                        html.label({"for":"esDueño"},"¿Tiene precio?:"),
+                                        html.select({"id":"tipo_rol","onChange":handleEsDueno},
+                                                                html.option({"value":""},"Seleccione una opción"),
+
+                                            html.option({"value":False},"No") ,
+                                            html.option({"value":True},"Si")
+                                            
+                                        )   
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"maxPersona"},"Máx. Personas:"),
-                                        html.input({"type":"number","id":"maxPersona","placeholder":"Máximas personas"})
+                                        html.input({"type":"number","id":"maxPersona","placeholder":"Máximas personas","onChange":handleMaximaPersonas})
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"precio"},"Precio:"),
-                                        html.input({"type":"text","id":"precio","placeholder":"Precio"})
+                                        html.input({"type":"text","id":"precio","placeholder":"Precio","onChange":handlePrecio})
                                 ),html.div({"class":"form-row"},
-                                        html.button({"type":"button","class":"add-zone-button"},"Agregar Zona"),
+                                        html.button({"type":"button","class":"add-zone-button","onClick":event(handleAgregar,prevent_default=True)},"Agregar Zona"),
                                 )
                         ),html.div({"class":"form-section"},
                                 html.h4("Agregar usuario al inmueble"),
                                 html.div({"class":"form-row"},
                                         html.label({"for":"tipo_inmueble"},"Tipo de Inmueble:"),
-                                        html.select({"id":"tipo_inmueble"},
+                                        html.select({"id":"tipo_inmueble","onChange":handleTipoInmueble},
+                                                                html.option({"value":""},"Seleccione una opción"),
+
                                             html.option({"value":"Apartamento"},"Apartamento"),
                                             html.option({"value":"Parqueadero"},"Parqueadero"),
                                             html.option({"value":"CuartoÚtil"},"CuartoÚtil"),
                                         )
                                 ),html.div({"class":"form-row"},
-                                        html.label({"for":"numero"},"Número:"),
-                                        html.input({"type":"text","id":"numero","placeholder":"Número"})
+                                        html.label({"for":"numero"},"Codigo:"),
+                                        html.input({"type":"text","id":"numero","placeholder":"Codigo:","onChange":handleCodigoInmueble})
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"coeficiente"},"Coeficiente:"),
-                                        html.input({"type":"text","id":"coeficiente","placeholder":"Coeficiente"})
+                                        html.input({"type":"text","id":"coeficiente","placeholder":"Coeficiente","onChange":handleCoeficiente})
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"piso"},"Piso:"),
-                                        html.input({"type":"text","id":"piso","placeholder":"Piso"})
-                                ),html.div({"class":"form-row"},
-                                        html.label({"for":"apartamento_dependiente_id"},"ID Apartamento Dependiente:"),
-                                        html.input({"type":"text","id":"apartamento_dependiente_id","placeholder":"Codigo inmueble"})
+                                        html.input({"type":"text","id":"piso","placeholder":"Piso","onChange":handlePiso})
                                 ),html.div({"class":"form-row invisible"},
                                         html.label({"for":"a"},"hidden"),
                                         html.input({"type":"text","id":"a","placeholder":"Hidden"})
                                 ),html.div({"class":"form-row"},
-                                        html.button({"type":"button","class":"add-zone-button"},"Agregar Inmueble"),
+                                        html.button({"type":"button","class":"add-zone-button","onClick":handleAgregarInmuble},"Agregar Inmueble"),
                                 )
                         
                         ),html.div({"class":"form-section"},
                                 html.h4("Agregar usuario al apartamento"),
                                 html.div({"class":"form-row"},
                                         html.label({"for":"cedula"},"Cedula:"),
-                                        html.input({"type":"text","id":"cedula","placeholder":"Cedula:"})
+                                        html.input({"type":"text","id":"cedula","placeholder":"Cedula:","onChange":handleCedulaPersonal})
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"inmueble"},"Codigo inmueble:"),
-                                        html.input({"type":"text","id":"inmueble","placeholder":"Codigo inmueble"})
+                                        html.input({"type":"text","id":"inmueble","placeholder":"Codigo inmueble","onChange":handleCodigoInmueble})
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"coeficiente"},"Coeficiente:"),
-                                        html.input({"type":"text","id":"coeficiente","placeholder":"Número"})
+                                        html.input({"type":"text","id":"coeficiente","placeholder":"Número","onChange":handleCoeficiente})
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"esAutorizado"},"¿Esta autorizado?:"),
-                                        html.div({"class":"checkbox-container"},
-                                                html.input({"type":"checkbox","id":"esAutorizado","placeholder":"¿Esta autorizado?"}),
+                                        html.select({"id":"tipo_rol","onChange":handleEsAutorizado},
+                                                                html.option({"value":""},"Seleccione una opción"),
 
-                                        )      
+                                            html.option({"value":False},"No") ,
+                                            html.option({"value":True},"Si")
+                                            
+                                        )
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"esDueño"},"¿Es dueño del apartamento?:"),
-                                        html.div({"class":"checkbox-container"},
-                                                html.input({"type":"checkbox","id":"esDueño","placeholder":"Es dueño del apartamento?"}),
+                                        html.select({"id":"tipo_rol","onChange":handleEsDueno},
+                                                                html.option({"value":""},"Seleccione una opción"),
 
-                                        )      
+                                            html.option({"value":False},"No") ,
+                                            html.option({"value":True},"Si")
+                                            
+                                        )   
                                 ),html.div({"class":"form-row"},
-                                        html.button({"type":"button","class":"add-zone-button"},"Agregar Inmueble"),
+                                        html.button({"type":"button","class":"add-zone-button","onClick":event(handleAgregarUsuarioAparatamento,prevent_default=True)},"Agregar usuario apartamento"),
                                 )
                         ),html.div({"class":"form-section"},
                                 html.h4("Sobre el rol"),
@@ -416,7 +630,9 @@ def crear_reserva(recipient, recipientUsuario):
                                 ),html.div({"class":"form-row"},
                                         html.label({"for":"tipo_rol"},"Rol al asignar:"),
                                         html.select({"id":"tipo_rol","onChange":handleSelectRol},
-                                            [html.option({"value":f"{roles[i]['id']}"},roles[i]["nombre"]) for i in range(len(roles))],
+                                            html.option({"value":""},"Seleccione una opción"),
+
+                                            [html.option({"value":f"{recipienteRoles[i]['id']}"},recipienteRoles[i]["nombre"]) for i in range(len(recipienteRoles))],
                                             
                                         )
                                 ),html.div({"class":"form-row"},
@@ -436,13 +652,150 @@ def crear_reserva(recipient, recipientUsuario):
                 ),html.li({"class":"project-item zone-item"},
                     html.div({"class":"card project-card zone-card"},
                         html.time({"class":"card-date" ,"datetime":f"{formatted_date_html}"},f"{formatted_date}"),
+                        html.div({"class":"", "id":""},
+                            html.h3("Listado de PQRSD"),
+                            html.div({"id":"slider-container"},
+                                [ html.div({"class":f"pqrs-content {activate[i]} "},
+                                           html.input ({"type":"text","value":f"{reciepientePQRS[i]['id']}","onClick":hanf})
+                                           ,html.p(f"usuario : {reciepientePQRS[i]['usuario']}"),html.p(f"fecha registro : {reciepientePQRS[i]['fecha_registro']}"),html.p(f"tipo pqrs : {reciepientePQRS[i]['tipo_pqrs']}"),html.p(f"estado : {reciepientePQRS[i]['estado']}"),html.p(f"mensaje : {reciepientePQRS[i]['mensaje']}"),html.p(f"responsable : {reciepientePQRS[i]['responsable']}")) for i in range(len(activate))]
+                               
+                            ),html.div({"class":"slider-controls"},
+                                       html.button({"id":"prev", "class":"slider-btn"},"Atrás"),
+                                html.button({"id":"next" ,"class":"slider-btn"},"Adelante"))
+                            ,html.div({"class":"evidencias"},
+                                html.h3("Agregar Evidencias"),
+                                html.input({"type":"file", "id":"evidencia"}),
+                                html.button({"class":"submit-btn","onClick":event(handleFinalizat,prevent_default=True)},"Finalizar PQRS")
+                            )
+                           
+                        )
                     )
                 ) ,django_css("css/dashboard.css"),django_js("script/dashboard.js")  
     )
     return propiedadesAdmin if recipientUsuario["rol"].lower() == "administrador" else propiedadesUsuario
     
-                    
-      
+    
+                     
+@component
+def crear_pqrs(recipientUsuario):
+    
+    pqrs, setPQRS = use_state("")
+    
+    def handlePqrs(request):
+        pass
+    
+    def handleEdad(request):
+        pass
+    
+    
+    def    handleCorreo(request):
+        pass
+    
+    def   handleMensaje(request):
+        pass
+    
+    def handleEvidencia(request):
+        pass
+    
+    
+    return html.div({"class":"form-section"},
+    html.h4("Formulario PQRS"),
+    html.div({"class":"form-row"},
+        html.label({"for":"usuario_afectado_cedula"},"Cédula del usuario afectado:"),
+        html.input({"type":"text", "id":"usuario_afectado_cedula", "placeholder":"Ingrese cédula"})
+    ),
+    html.div({"class":"form-row"},
+        html.label({"for":"tipo_pqrs"},"Tipo de PQRS:"),
+        html.select({"id":"tipo_pqrs","onChange":handlePqrs},
+            html.option({"value":""},"Seleccione una opción"),
+            html.option({"value":"P"},"Petición"),
+            html.option({"value":"Q"},"Queja"),
+            html.option({"value":"R"},"Reclamo"),
+            html.option({"value":"S"},"Sugerencia"),
+            html.option({"value":"D"},"Denuncia")
+        )
+    ),
+    html.div({"class":"form-row"},
+        html.label({"for":"edad"},"Edad:"),
+        html.input({"type":"number", "id":"edad", "placeholder":"Ingrese edad","onChange":handleEdad})
+    ),
+    html.div({"class":"form-row"},
+        html.label({"for":"isCorreo"},"¿Notificar por correo?"),
+        html.select({"id":"isCorreo","onChange":handleCorreo},
+            html.option({"value":""},"Seleccione una opción"),
+            html.option({"value":"true"},"Sí"),
+            html.option({"value":"false"},"No")
+        )
+    ),
+    html.div({"class":"form-row"},
+        html.label({"for":"mensaje"},"Mensaje:"),
+        html.textarea({"id":"mensaje", "rows":"4","onChange":handleMensaje})
+    ),
+    html.div({"class":"form-row"},
+        html.label({"for":"evidencias"},"Evidencias:"),
+        html.input({"type":"file", "id":"evidencias", "multiple":True,"onChange":handleEvidencia})
+    ),
+    html.div({"class":"form-row"},
+        html.button({"type":"button", "class":"btn btn-primary", },"Crear PQRS")
+    ),            django_css("css/dashboard.css"),django_js("script/dashboard.js")  
+
+    )
+
+@component              
+def  lista_reservas(recipientUsuario,listaReservas):
+    return html.ul({"class":"tasks-list"},
+    [
+
+    html.li({"class":"tasks-item"},
+      html.div({"class":"card task-card"},
+        [
+          html.div({"class":"card-input"},
+            [
+              html.input({"type":"checkbox", "name":"task-1", "id":"task-1"}),
+              html.label({"for":"task-1"}, f"{listaReservas[i]['Responsable']}")
+            ]
+          ),
+          html.div({"class":"card-badge cyan radius-pill"}, f"{listaReservas[i]['ReciboPago']}"),
+          html.ul({"class":"card-meta-list"},
+            [
+              html.li(
+                html.div({"class":"meta-box icon-box"},
+                  [
+                      html.span({"class":"material-symbols-rounded icon"}, "Inicio"),
+                    html.span(datetime.fromisoformat(f'{listaReservas[i]["FechaInicio"]}'.replace("Z", "+00:00")).astimezone(pytz.timezone("America/Bogota")).strftime("%d/%m/%Y %H:%M"))
+
+                  ]
+                )
+              ),
+              html.li(
+                html.div({"class":"meta-box icon-box"},
+                  [
+                    html.span({"class":"material-symbols-rounded icon"}, "Fin"),
+                    html.span(datetime.fromisoformat(f'{listaReservas[i]["FechaFin"]}'.replace("Z", "+00:00")).astimezone(pytz.timezone("America/Bogota")).strftime("%d/%m/%Y %H:%M"))
+
+                  ]
+                )
+              ),
+              html.li(
+                html.div({"class":"meta-box icon-box"},
+                  [
+                    html.span({"class":"material-symbols-rounded icon"}, "apt:"),
+                    html.data({"value":f"{listaReservas[i]['Apartamento']}"}, f"{listaReservas[i]['Apartamento']}")
+                  ]
+                )
+              ),
+              html.li(
+                html.div({"class":"card-badge red"}, f"{listaReservas[i]['DepositoEntregado']}")
+              )
+            ]
+          )
+        ]
+      )
+    )
+    for i in range(len(listaReservas))
+    
+  ], django_css("css/dashboard.css"),django_js("script/dashboard.js")
+) if recipientUsuario["rol"].lower() != "visitante" else ""
 
 #Button({})
 
